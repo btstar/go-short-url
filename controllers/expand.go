@@ -6,4 +6,3 @@ type ExpandController struct {
 	beego.Controller
 }
 
-

@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"go-short-url/models"
 	"go-short-url/vo"
-	"fmt"
+	"strings"
 )
 
 type ShortController struct {
@@ -17,8 +18,33 @@ type ShortController struct {
 // @Failure 400 Invalid url
 // @router / [get]
 func (c *ShortController) Get()  {
-	response := vo.ResponseData{
+	response := &vo.ResponseData{
 		Code: vo.SUCCESS_CODE,
 	}
-	fmt.Println(response)
+	c.Data["json"] = response
+	url := c.GetString("url")
+	if url == "" || !strings.HasPrefix(url, "http") {
+		response.Code = vo.ERROR_CODE
+		response.Message = "url不合法"
+		c.ServeJSON()
+		c.StopRun()
+	}
+	if shortUrl := models.IsLongUrlExist(url); shortUrl == nil {
+		response.Data = make(map[string]interface{})
+		response.Data["long_url"] = shortUrl.LongUrl
+		response.Data["short_url"] = shortUrl.ShortUrl
+	} else {
+		shortUrl, err := models.GenerateShortUrl(url)
+		if err != nil {
+			response.Code = vo.ERROR_CODE
+			response.Message = err.Error()
+			c.ServeJSON()
+			c.StopRun()
+		}
+		response.Data = make(map[string]interface{})
+		response.Data["long_url"] = shortUrl.LongUrl
+		response.Data["short_url"] = shortUrl.ShortUrl
+	}
+
+	c.ServeJSON()
 }
