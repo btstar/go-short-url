@@ -20,11 +20,6 @@ func init() {
 				&controllers.ShortController{},
 			),
 		),
-		beego.NSNamespace("/expand",
-			beego.NSInclude(
-				&controllers.ExpandController{},
-			),
-		),
 	)
 	beego.AddNamespace(ns)
 }

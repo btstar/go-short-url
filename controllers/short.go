@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"go-short-url/models"
 	"go-short-url/vo"
+	"log"
 	"strings"
 )
 
@@ -29,7 +30,8 @@ func (c *ShortController) Get()  {
 		c.ServeJSON()
 		c.StopRun()
 	}
-	if shortUrl := models.IsLongUrlExist(url); shortUrl == nil {
+	log.Print(url)
+	if shortUrl := models.IsLongUrlExist(url); shortUrl != nil {
 		response.Data = make(map[string]interface{})
 		response.Data["long_url"] = shortUrl.LongUrl
 		response.Data["short_url"] = shortUrl.ShortUrl
